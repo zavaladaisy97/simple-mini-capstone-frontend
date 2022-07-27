@@ -7,6 +7,8 @@ export default {
       products: [],
       errors: [],
       message: "Welcome",
+      currentProduct: {},
+      editProduct: {},
       newProductName: "",
       newProductPrice: "",
       newProductDescription: "",
@@ -50,7 +52,14 @@ export default {
     },
     showProduct: function (product) {
       console.log(product);
+      this.currentProduct = product;
+      this.editProduct = product;
       document.querySelector("#product-info").showModal();
+    },
+    updateRecipe: function (productToEdit) {
+      axios.patch("http://localhost:3000/products/" + productToEdit.id + ".json", productToEdit).then((response) => {
+        console.log(response.data);
+      });
     },
   },
 };
@@ -75,15 +84,29 @@ export default {
       <h2>Title: {{ product.name }}</h2>
       <img v-bind:src="product.image_url" v-bind:alt="product.title" />
       <p>Price: {{ product.price }}</p>
-      <button v-on:click="showProduct()">More info</button>
+      <button v-on:click="showProduct(product)">More info</button>
     </div>
 
     <dialog id="product-info">
       <form method="dialog">
         <h1>Product Info:</h1>
-        <p>Name:</p>
-        <p>Price:</p>
-        <p>Description:</p>
+        <p>Name: {{ currentProduct.name }}</p>
+        <p>Price: {{ currentProduct.price }}</p>
+        <p>Description: {{ currentProduct.description }}</p>
+        <h1>Edit Product</h1>
+        <p>
+          Name:
+          <input type="text" v-model="editProduct.name" />
+        </p>
+        <p>
+          Price:
+          <input type="number" v-model="editProduct.price" />
+        </p>
+        <p>
+          Description:
+          <input type="text" v-model="editProduct.description" />
+        </p>
+        <button v-on:click="updateProduct(editProduct)">Update</button>
         <button>Close</button>
       </form>
     </dialog>
@@ -98,5 +121,6 @@ img {
   max-width: 500px;
 }
 .errors {
+  color: slateblue;
 }
 </style>
